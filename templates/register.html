@@ -1,0 +1,14 @@
+{% extends "user_layout.html" %}
+{% from 'macros.html' import render_field %}
+
+{% block content %}
+<form method="POST" action="">
+    {{ form.hidden_tag() }}
+    {% for field in form %}
+        {{ render_field(field) }}
+    {% endfor %}
+    <input type="submit" value="Login" class="button">Login!<br>
+    <a class="button icon-right" href="{{ url_for('login') }}">
+        <span>Login</span> <i class="material-icons">add</i></a>
+</form>
+{% endblock %}
