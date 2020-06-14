@@ -50,6 +50,7 @@ footer {
 	position: relative;
 	text-align: center;
 	font-size: 14px;
+	margin: 10px;
 }
 .button.button-secondary {
 	background: #FFF;
@@ -58,11 +59,14 @@ footer {
 }
 .button.icon-right {
 	padding-right: 30px;
+	padding-left: 30px;
 	top: -10px;
+	margin: 10px;
 }
 .button.icon-left {
 	padding-left: 30px;
 	top: -10px;
+	margin; 10px
 }
 .button.icon-right i {
 	position: absolute;
@@ -196,6 +200,7 @@ form label {
 form input[type=text],
 form input[type=password],
 form input[type=date],
+from input[type=number],
 form textarea {
 	border: 2px solid #e1e1e1;
 	font-size: 18px;
@@ -208,12 +213,14 @@ form textarea {
 form input[type=text]:focus,
 form input[type=date]:focus,
 form input[type=password]:focus,
+form input[type=number]:focus,
 form textarea:focus {
 	outline: 0;
 	border-color: #678f89;
 }
 form input[type=text]:hover,
-form input[type=date]:hover
+form input[type=date]:hover,
+form input[type=number]:hover
 form textarea:hover {
 	border-color: #678f89;
 }
@@ -223,6 +230,7 @@ form textarea:hover {
 }
 input[type=submit] {
 	margin-right: 5px;
+	margin-bottom: 5px;
 }
 
 

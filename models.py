@@ -35,7 +35,7 @@ class Tags(Model):
 class Entry(Model):
     title = CharField()
     time_spent = IntegerField()
-    date_created = DateField(default=datetime.date.today())
+    date_created = DateTimeField(default=datetime.datetime.now)
     content = TextField()
     resources = TextField()
     tag = ForeignKeyField(

@@ -1,6 +1,7 @@
-from flask import (Flask, g, render_template, flash, redirect, url_for, abort)
+from flask import (Flask, g, render_template, flash, redirect, url_for, abort, request)
 from flask_bcrypt import check_password_hash
 from flask_login import (LoginManager, login_user, logout_user, current_user, login_required)
+from werkzeug.datastructures import MultiDict
 
 import forms
 import models
@@ -86,33 +87,36 @@ def logout():
 @app.route('/')
 def index():
     """Index page is also a list of entries"""
-    entry_list = models.Entry.select().limit(8)
-    return render_template('index.html', entries=entry_list)
+    entries = models.Entry.select().limit(8)
+    return render_template('index.html', entries=entries)
 
 
 @app.route('/entries')
 def entries():
     """Page to view a list of entries.  More entries are viewed"""
-    entry_list = models.Entry.select().limit(24)
-    return render_template('index.html', entries=entry_list)
+    entries = models.Entry.select().limit(24)
+    return render_template('index.html', entries=entries)
 
 
 @app.route('/entries/new', methods=('GET', 'POST'))
 @login_required
 def create_new():
     """Create a new journal entry."""
-    form = forms.EntryForm()
-    if form.validate_on_submit():
-        models.Entry.create(user=g.user._get_current_object(),
-                            title=form.title.data.strip(),
-                            time_spent=form.time_spent.data.strip(),
-                            date_created=form.date_created.strptime('%d/%m/%Y'),
-                            content=form.content.data.strip(),
-                            resources=form.resources.data.strip()
-                            )
-        flash("Entry created", "success")
-        return redirect(url_for('entries'))
+    data = request.values
+    form = forms.EntryForm(data)
+    if request.method == "POST":
+        if form.validate_on_submit():
+            models.Entry.create(user=g.user._get_current_object(),
+                                title=form.title.data,
+                                time_spent=form.time_spent.data,
+                                date_created=form.date_created.data.strptime('%d/%m/%Y'),
+                                content=form.content.data,
+                                resources=form.resources.data
+                                )
+            flash("Entry created", "success")
+            return redirect(url_for('entries'))
     return render_template('new.html', form=form)
+
 
 
 @app.route('/entries/<int:entry_id>')
@@ -120,8 +124,6 @@ def create_new():
 def view_entry(entry_id):
     """View a detailed version of a journal entry"""
     entry = models.Entry.select().where(models.Entry.id == entry_id)
-    if entry.count() == 0:
-        abort(404)
     return render_template('detail.html', entries=entry)
 
 
@@ -165,9 +167,9 @@ def delete_entry(entry_id):
         return redirect(url_for('entries'))
 
 
-@app.errorhandler(404)
-def not_found():
-    return render_template('404.html'), 404
+#@app.errorhandler(404)
+#def not_found():
+    #return render_template('404.html'), 404
 
 
 if __name__ == '__main__':

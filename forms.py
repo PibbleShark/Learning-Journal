@@ -1,7 +1,7 @@
 from flask_wtf import Form
 from wtforms import StringField, PasswordField, TextAreaField
 from wtforms.validators import InputRequired, ValidationError, Email, Length, EqualTo, Optional
-from wtforms.fields.html5 import EmailField, IntegerField, DateField
+from wtforms.fields.html5 import EmailField, IntegerField, DateTimeField
 
 from models import User
 
@@ -42,15 +42,11 @@ class EntryForm(Form):
     title = StringField('Title', validators=[
         InputRequired(),
     ])
-    time_spent = IntegerField('Time Spent', validators=[
-        Optional()
-    ])
-    date_created = DateField('Date', validators=[
+    time_spent = IntegerField('Time Spent')
+    date_created = DateTimeField('Date', validators=[
         InputRequired()
     ])
     content = TextAreaField('What have you learned?', validators=[
         InputRequired()
     ])
-    resources = TextAreaField('Additional resources to remember', validators=[
-        Optional()
-    ])
+    resources = TextAreaField('Additional resources to remember')
