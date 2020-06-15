@@ -104,7 +104,7 @@ def create_new():
     """Create a new journal entry."""
     form = forms.EntryForm()
     if form.validate_on_submit():
-        models.Entry.create(user=current_user._get_current_object(),
+        models.Entry.create(user=g.user._get_current_object(),
                             title=form.title.data.strip(),
                             time_spent=form.time_spent.data,
                             date_created=form.date_created.data,
