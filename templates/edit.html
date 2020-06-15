@@ -1,23 +1,29 @@
-{% extends "layout.html" %}
+{% extends "layout_header.html" %}
 
 {% block content %}
 <div class="container">
     <div class="edit-entry">
         <h2>Edit Entry</h2>
+        <div class="container">
+    <div class="new-entry">
+        <h2>New Entry</h2>
         <form method="POST" action="">
+            {{ form.hidden_tag() }}
             <label for="title"> Title</label>
-            <input id="title" type="text" name="title" value="{{ form.title }}"><br>
+            <input id="title" type="text" name="title" required><br>
             <label for="date">Date</label>
-            <input id="date" type="date" name="date" value="{{ form.datetime }}"><br>
+            <input id="date" type="date" name="date_created"><br>
             <label for="time-spent"> Time Spent</label>
-            <input id="time-spent" type="text" name="timeSpent" value="{{ form.time_spent }}"><br>
+            <input id="time-spent" type="number" name="time_spent"><br>
             <label for="what-i-learned">What I Learned</label>
-            <textarea id="what-i-learned" rows="5" name="whatILearned">{{ form.content }}</textarea>
+            <textarea id="what-i-learned" rows="5" name="content"></textarea>
             <label for="resources-to-remember">Resources to Remember</label>
-            <textarea id="resources-to-remember" rows="5" name="ResourcesToRemember">{{ form.resources }}</textarea>
+            <textarea id="resources-to-remember" rows="5" name="resources"></textarea>
             <input type="submit" value="Publish Entry" class="button"><br>
-            <a href="#" class="button button-secondary">Cancel</a>
+            <a href="{{ url_for('index') }}" class="button">Cancel</a>
         </form>
+    </div>
+</div>
     </div>
 </div>
 {% endblock %}

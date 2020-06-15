@@ -1,14 +1,14 @@
-{% extends "user_layout.html" %}
+{% extends "style_layout.html" %}
 {% from 'macros.html' import render_field %}
 
 {% block content %}
 <form method="POST" action="">
     {{ form.hidden_tag() }}
     {% for field in form %}
-        {{ render_field(field) }}
+        {{ render_field(field(class='login-register')) }}
     {% endfor %}
-    <input type="submit" value="Login" class="button"><br>
+    <input type="submit" value="Login" class="button icon-right"><br>
     <a class="button icon-right" href="{{ url_for('register') }}">
-        <span>Register</span> <i class="material-icons">add</i></a>
+        <span>Register</span></a>
 </form>
 {% endblock %}

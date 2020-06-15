@@ -31,6 +31,7 @@ header .button {
 footer {
 	text-align: center;
 	padding: 35px 0;
+	margin: 20px;
 	border-top: 2px dotted #678f89;
 }
 
@@ -60,13 +61,13 @@ footer {
 .button.icon-right {
 	padding-right: 30px;
 	padding-left: 30px;
-	top: -10px;
+	top: 10px;
 	margin: 10px;
 }
 .button.icon-left {
 	padding-left: 30px;
 	top: -10px;
-	margin; 10px
+	margin: 10px;
 }
 .button.icon-right i {
 	position: absolute;
@@ -195,7 +196,9 @@ ul li a {
 
 form label {
 	display: block;
+	margin-top: 8px;
 	margin-bottom: 8px;
+	margin-left: 10px;
 }
 form input[type=text],
 form input[type=password],
@@ -220,7 +223,7 @@ form textarea:focus {
 }
 form input[type=text]:hover,
 form input[type=date]:hover,
-form input[type=number]:hover
+form input[type=number]:hover,
 form textarea:hover {
 	border-color: #678f89;
 }
@@ -232,7 +235,13 @@ input[type=submit] {
 	margin-right: 5px;
 	margin-bottom: 5px;
 }
-
+.login-register{
+    margin-bottom: 15px !important;
+    margin-top: 15px;
+    margin-left: 10px;
+    border-radius: 4px;
+    width: calc(40% - 32px) !important;
+}
 
 
 

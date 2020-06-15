@@ -1,7 +1,7 @@
 from flask_wtf import Form
 from wtforms import StringField, PasswordField, TextAreaField
 from wtforms.validators import InputRequired, ValidationError, Email, Length, EqualTo, Optional
-from wtforms.fields.html5 import EmailField, IntegerField, DateTimeField
+from wtforms.fields.html5 import IntegerField, DateTimeField
 
 from models import User
 
@@ -13,7 +13,7 @@ def email_exists(form, field):
 
 
 class RegisterForm(Form):
-    email = EmailField('Email', validators=[
+    email = StringField('Email', validators=[
         InputRequired(),
         Email(),
         email_exists
@@ -29,12 +29,12 @@ class RegisterForm(Form):
 
 
 class LoginForm(Form):
-    email = EmailField('Email', validators=[
-        InputRequired(),
+    email = StringField('Email', validators=[
+        InputRequired(message='You must enter and email address'),
         Email()
     ])
     password = PasswordField('Password', validators=[
-        InputRequired()
+        InputRequired(message='You must enter your password')
     ])
 
 
@@ -46,7 +46,7 @@ class EntryForm(Form):
     date_created = DateTimeField('Date', validators=[
         InputRequired()
     ])
-    content = TextAreaField('What have you learned?', validators=[
+    content = TextAreaField('What I Learned', validators=[
         InputRequired()
     ])
-    resources = TextAreaField('Additional resources to remember')
+    resources = TextAreaField('Resources to Remember')
