@@ -1,4 +1,4 @@
-from flask import (Flask, g, render_template, flash, redirect, url_for, abort, request)
+from flask import (Flask, g, render_template, flash, redirect, url_for, abort,)
 from flask_bcrypt import check_password_hash
 from flask_login import (LoginManager, login_user, logout_user, current_user, login_required)
 from werkzeug.datastructures import MultiDict
@@ -102,19 +102,17 @@ def entries():
 @login_required
 def create_new():
     """Create a new journal entry."""
-    data = request.values
-    form = forms.EntryForm(data)
-    if request.method == "POST":
-        if form.validate_on_submit():
-            models.Entry.create(user=g.user._get_current_object(),
-                                title=form.title.data,
-                                time_spent=form.time_spent.data,
-                                date_created=form.date_created.data.strptime('%d/%m/%Y'),
-                                content=form.content.data,
-                                resources=form.resources.data
-                                )
-            flash("Entry created", "success")
-            return redirect(url_for('entries'))
+    form = forms.EntryForm()
+    if form.validate_on_submit():
+        models.Entry.create(user=current_user._get_current_object(),
+                            title=form.title.data.strip(),
+                            time_spent=form.time_spent.data,
+                            date_created=form.date_created.data,
+                            content=form.content.data.strip(),
+                            resources=form.resources.data.strip()
+                            )
+        flash("Entry created", "success")
+        return redirect(url_for('entries'))
     return render_template('new.html', form=form)
 
 
@@ -145,7 +143,7 @@ def edit_entry(entry_id):
             entry.save(user=g.user._get_current_object(),
                        title=form.title.data.strip(),
                        time_spent=form.time_spent.data.strip(),
-                       date_created=form.date_created.strptime('%d/%m/%Y'),
+                       date_created=form.date_created.data,
                        content=form.content.data.strip(),
                        resources=form.resources.data.strip()
                        )

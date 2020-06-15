@@ -7,8 +7,8 @@
     <div>{{ form.email.label }}{{ form.email(class='login-register') }}</div>
     <div>{{ form.password.label }}{{ form.password(class='login-register') }}</div>
     <div>{{ form.password2.label }}{{ form.password2(class='login-register') }}</div>
-    <input type="submit" value="Register" class="button icon-right"><br>
-    <a class="button icon-right" href="{{ url_for('login') }}">
+    <input type="submit" value="Register" class="button icon-left"><br>
+    <a class="button icon-left" href="{{ url_for('login') }}">
         <span>Login</span></a>
 </form>
 {% endblock %}

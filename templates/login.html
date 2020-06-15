@@ -6,8 +6,8 @@
     {{ form.hidden_tag() }}
     <div>{{ form.email.label }}{{ form.email(class='login-register') }}</div>
     <div>{{ form.password.label }}{{ form.password(class='login-register') }}</div>
-    <input type="submit" value="Login" class="button icon-right"><br>
-    <a class="button icon-right" href="{{ url_for('register') }}">
+    <input type="submit" value="Login" class="button icon-left"><br>
+    <a class="button icon-left" href="{{ url_for('register') }}">
         <span>Register</span></a>
 </form>
 {% endblock %}

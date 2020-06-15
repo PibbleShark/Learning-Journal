@@ -1,29 +1,18 @@
-{% extends "layout_header.html" %}
+{% extends "header_layout.html" %}
+{% from 'macros.html' import render_field %}
 
 {% block content %}
-<div class="container">
-    <div class="edit-entry">
-        <h2>Edit Entry</h2>
-        <div class="container">
-    <div class="new-entry">
-        <h2>New Entry</h2>
-        <form method="POST" action="">
-            {{ form.hidden_tag() }}
-            <label for="title"> Title</label>
-            <input id="title" type="text" name="title" required><br>
-            <label for="date">Date</label>
-            <input id="date" type="date" name="date_created"><br>
-            <label for="time-spent"> Time Spent</label>
-            <input id="time-spent" type="number" name="time_spent"><br>
-            <label for="what-i-learned">What I Learned</label>
-            <textarea id="what-i-learned" rows="5" name="content"></textarea>
-            <label for="resources-to-remember">Resources to Remember</label>
-            <textarea id="resources-to-remember" rows="5" name="resources"></textarea>
-            <input type="submit" value="Publish Entry" class="button"><br>
-            <a href="{{ url_for('index') }}" class="button">Cancel</a>
-        </form>
-    </div>
-</div>
-    </div>
+<div class="new-entry">
+    <h2>New Entry</h2>
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <div>{{ form.title.label }}{{ render_field(form.title) }}</div>
+        <div>{{ form.time_spent.label }}{{ render_field(form.time_spent(min=0)) }}</div>
+        <div>{{ form.date_created.label }}{{ render_field(form.date_created) }}</div>
+        <div>{{ form.content.label }}{{ render_field(form.content) }}</div>
+        <div>{{ form.resources.label }}{{ render_field(form.resources) }}</div>
+        <input type="submit" value="Publish Entry" class="button icon-left"><br>
+        <a href="{{ url_for('index') }}" class="button icon-left">Cancel</a>
+    </form>
 </div>
 {% endblock %}

@@ -1,4 +1,4 @@
-{% extends "layout_header.html" %}
+{% extends "style_layout.html" %}
 {% from 'macros.html' import render_field %}
 
 {% block content %}
@@ -6,13 +6,13 @@
     <h2>New Entry</h2>
     <form method="POST" action="">
         {{ form.hidden_tag() }}
-        <div>{{ form.title.label }}{{ form.title }}</div>
-        <div>{{ form.time_spent.label }}{{ form.time_spent(min=0) }}</div>
-        <div>{{ form.date_created.label }}{{ form.date_created }}</div>
-        <div>{{ form.content.label }}{{ form.content }}</div>
-        <div>{{ form.resources.label }}{{ form.resources }}</div>
-        <input type="submit" value="Publish Entry" class="button"><br>
-        <a href="{{ url_for('index') }}" class="button">Cancel</a>
+        <div>{{ form.title.label }}{{ render_field(form.title) }}</div>
+        <div>{{ form.time_spent.label }}{{ render_field(form.time_spent(min=0)) }}</div>
+        <div>{{ form.date_created.label }}{{ render_field(form.date_created) }}</div>
+        <div>{{ form.content.label }}{{ render_field(form.content) }}</div>
+        <div>{{ form.resources.label }}{{ render_field(form.resources) }}</div>
+        <input type="submit" value="Publish Entry" class="button icon-left"><br>
+        <a href="{{ url_for('index') }}" class="button icon-left">Cancel</a>
     </form>
 </div>
 {% endblock %}
