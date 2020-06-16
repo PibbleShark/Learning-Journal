@@ -1,7 +1,7 @@
 from flask import (Flask, g, render_template, flash, redirect, url_for, abort,)
 from flask_bcrypt import check_password_hash
 from flask_login import (LoginManager, login_user, logout_user, current_user, login_required)
-from werkzeug.datastructures import MultiDict
+
 
 import forms
 import models
@@ -104,7 +104,7 @@ def create_new():
     """Create a new journal entry."""
     form = forms.EntryForm()
     if form.validate_on_submit():
-        models.Entry.create(user=g.user._get_current_object(),
+        models.Entry.create(user=g.user.get_id(),
                             title=form.title.data.strip(),
                             time_spent=form.time_spent.data,
                             date_created=form.date_created.data,
@@ -116,20 +116,20 @@ def create_new():
     return render_template('new.html', form=form)
 
 
-
-@app.route('/entries/<int:entry_id>')
+@app.route('/entries/<id>')
 @login_required
-def view_entry(entry_id):
-    """View a detailed version of a journal entry"""
-    entry = models.Entry.select().where(models.Entry.id == entry_id)
-    return render_template('detail.html', entries=entry)
+def view_entry(id):
+    """View a journal entry with detail."""
+    breakpoint()
+    current_entry = models.Entry.select().where(models.Entry.id == id)
+    return render_template('detail.html', entry=current_entry)
 
 
-@app.route('/entries/<int:entry_id>/edit', methods=('GET', 'POST'))
+@app.route('/entries/<id>/edit', methods=('GET', 'POST'))
 @login_required
-def edit_entry(entry_id):
+def edit_entry(id):
     """Edit a journal entry"""
-    entry = models.Entry.select().where(models.Entry.id == entry_id)
+    entry = models.Entry.select().where(models.Entry.id == id)
     if entry.count() == 0:
         abort(404)
     else:
@@ -140,7 +140,7 @@ def edit_entry(entry_id):
         form.content.data = entry.content
         form.resources.data = entry.resources
         if form.validate_on_submit():
-            entry.save(user=g.user._get_current_object(),
+            entry.save(user=g.user.get_id(),
                        title=form.title.data.strip(),
                        time_spent=form.time_spent.data.strip(),
                        date_created=form.date_created.data,
@@ -152,11 +152,11 @@ def edit_entry(entry_id):
         return render_template('edit.html', form=form)
 
 
-@app.route('/entries/<int:entry_id>/delete', methods=('GET', 'POST'))
+@app.route('/entries/<id>/delete', methods=('GET', 'POST'))
 @login_required
-def delete_entry(entry_id):
+def delete_entry(id):
     """Delete a journal entry"""
-    entry = models.Entry.select().where(models.Entry.id == entry_id)
+    entry = models.Entry.select().where(models.Entry.id == id)
     if entry.count() == 0:
         abort(404)
     else:

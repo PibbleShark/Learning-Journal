@@ -1,36 +1,36 @@
-{% extends "layout.html" %}
+{% extends "header_layout.html" %}
 
 {% block content %}
-<div class="container">
-                <div class="entry-list single">
-                    <article>
-                        <h1>{{ entry.title }}</h1>
-                        <time datetime="{{ entry.date_created.strftime('%d/%m/%Y') }}">
-                            {{ entry.date_created.strftime('%d/%m/%Y') }}
-                        </time>
-                        <div class="entry">
-                            <h3>Time Spent: </h3>
-                            <p>{{ entry.time_spent.strip() }} Hours</p>
-                        </div>
-                        <div class="entry">
-                            <h3>What I Learned:</h3>
-                            <p>{{ entry.content }}</p>
-                        </div>
-                        <div class="entry">
-                            <h3>Resources to Remember:</h3>
-                            <ul>
-                                {% for resources in entry.resources %}
-                                    <li><a href="">{{ resource }}</a></li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </article>
-                </div>
-            </div>
-            <div class="edit">
-                <p><a href="{{ url_for('edit_entry', entry_id=entry.id }}">Edit Entry</a></p>
-            </div>
-            <div class="delete">
-                <p><a href="{{ url_for('delete_entry', entry_id=entry.id }}">Delete Entry</a></p>
-            </div>
+<div class="entry-list single">
+    {{
+    <article>
+        <h1>{{ entry.title }}</h1>
+        <time>
+            {{ entry.date_created.strftime('%d/%m/%Y') }}
+        </time>
+        <div class="entry">
+            <h3>Time Spent: </h3>
+            <p>{{ entry.time_spent }} Hours</p>
+        </div>
+        <div class="entry">
+            <h3>What I Learned:</h3>
+            <p>{{ entry.content }}</p>
+        </div>
+        <div class="entry">
+            <h3>Resources to Remember:</h3>
+            <ul>
+                {% for resources in entry.resources %}
+                    <li><a href="">{{ resource }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </article>
+</div>
+
+<div class="edit">
+    <p><a class="button icon-left" href="{{ url_for('edit_entry', id=entry.id) }}">Edit Entry</a></p>
+</div>
+<div class="delete">
+    <p><a class="button icon-left" href="{{ url_for('delete_entry', id=entry.id) }}">Delete Entry</a></p>
+</div>
 {% endblock %}

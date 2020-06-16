@@ -34,10 +34,10 @@ class Tags(Model):
 
 class Entry(Model):
     user = ForeignKeyField(
-        model=User,
+        User,
         related_name='entries')
-    title = CharField()
-    time_spent = IntegerField()
+    title = CharField(unique=True)
+    time_spent = IntegerField(default=0)
     date_created = DateField(default=datetime.date.today())
     content = TextField()
     resources = TextField()
