@@ -2,8 +2,8 @@
 {% from 'macros.html' import render_field %}
 
 {% block content %}
-<div class="new-entry">
-    <h2>New Entry</h2>
+<div class="edit-entry">
+    <h2>Edit Entry</h2>
     <form method="POST" action="">
         {{ form.hidden_tag() }}
         <div>{{ form.title.label }}{{ render_field(form.title) }}</div>
@@ -11,8 +11,8 @@
         <div>{{ form.date_created.label }}{{ render_field(form.date_created) }}</div>
         <div>{{ form.content.label }}{{ render_field(form.content) }}</div>
         <div>{{ form.resources.label }}{{ render_field(form.resources) }}</div>
-        <input type="submit" value="Publish Entry" class="button icon-left"><br>
-        <a href="{{ url_for('index') }}" class="button icon-left">Cancel</a>
+        <input type="submit" value="Save Changes" class="button icon-left"><br>
+        <a href="{{ url_for('view_entry', id=entry.id) }}" class="button icon-left">Cancel</a>
     </form>
 </div>
 {% endblock %}

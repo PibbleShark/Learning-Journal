@@ -39,9 +39,6 @@ class LoginForm(FlaskForm):
 
 
 class EntryForm(FlaskForm):
-    #user = HiddenField('User', validators=[
-        #InputRequired()
-    #])
     title = StringField('Title', validators=[
         InputRequired(message='You must give your entry a title'),
     ])
@@ -51,3 +48,9 @@ class EntryForm(FlaskForm):
         InputRequired(message='You must have learned something')
     ])
     resources = TextAreaField('Resources to Remember')
+
+
+class TagForm(FlaskForm):
+    tag = StringField('Name of Your New Tag', validators=[
+        InputRequired(message='You must give your tag a title')
+    ])

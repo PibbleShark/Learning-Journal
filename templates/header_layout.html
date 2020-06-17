@@ -6,6 +6,8 @@
     <span>New Entry</span> <i class="material-icons">add</i></a>
 <a class="button icon-right" href="{{ url_for('logout') }}">
     <span>Logout</span></a>
+<a class="button icon-right" href="{{ url_for('create_tag') }}">
+    <span>Create Tag</span></a>
 {% else %}
 <a class="button icon-right" href="{{ url_for('login') }}">
     <span>Login</span></a>

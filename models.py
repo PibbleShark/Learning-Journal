@@ -1,4 +1,5 @@
 import datetime
+import app
 
 from flask_bcrypt import generate_password_hash
 from flask_login import UserMixin
@@ -25,14 +26,12 @@ class User(UserMixin, Model):
             raise ValueError('User already exists')
 
 
-class Tags(Model):
-    tag = CharField()
-
+class BaseModel(Model):
     class Meta:
         database = DATABASE
 
 
-class Entry(Model):
+class Entry(BaseModel):
     user = ForeignKeyField(
         User,
         related_name='entries')
@@ -41,16 +40,52 @@ class Entry(Model):
     date_created = DateField(default=datetime.date.today())
     content = TextField()
     resources = TextField()
-    #tag = ForeignKeyField(
-        #model=Tags,
-        #related_name='entries')
 
-    class Meta:
-        database = DATABASE
-        order_by = ('tag',)
+
+
+
+class Tags(BaseModel):
+    tag = CharField(unique=True)
+
+
+class EntryTags(BaseModel):
+    entry = ForeignKeyField(Entry)
+    tag = ForeignKeyField(Tags)
+
+    @classmethod
+    def tag_current_entries(cls, tag):
+        try:
+            tag_entries = Entry.select().where(Entry.contents.contains(tag))
+        except DoesNotExist:
+            pass
+        else:
+            try:
+                for entry in tag_entries:
+                    cls.create(
+                        entry=entry,
+                        tag=tag)
+            except IntegrityError:
+                pass
+
+    @classmethod
+    def tag_new_entry(cls, entry):
+        try:
+            associated_tags = Tags.select().where(entry.contents.contains(Tags.tag))
+        except DoesNotExist:
+            pass
+        else:
+            try:
+                for tag in associated_tags:
+                    cls.create(
+                        entry=entry,
+                        tag=tag)
+            except IntegrityError:
+                pass
+
+
 
 
 def initialize():
     DATABASE.connect()
-    DATABASE.create_tables([User, Tags, Entry], safe=True)
+    DATABASE.create_tables([User, Tags, Entry, EntryTags], safe=True)
     DATABASE.close()

@@ -1,0 +1,10 @@
+{% extends "style_layout.html" %}
+{% from 'macros.html' import render_field %}
+
+{% block content %}
+<form method="POST" action="">
+    {{ form.hidden_tag() }}
+    <div>{{ form.tag.label }}{{ form.tag(class='login-register') }}</div>
+    <input type="submit" value="Create Tag" class="button icon-left"><br>
+</form>
+{% endblock %}
