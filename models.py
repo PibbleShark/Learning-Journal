@@ -1,5 +1,4 @@
 import datetime
-import app
 
 from flask_bcrypt import generate_password_hash
 from flask_login import UserMixin
@@ -10,7 +9,7 @@ DATABASE = SqliteDatabase('journal.db')
 
 class User(UserMixin, Model):
     email = CharField(unique=True)
-    password = CharField(unique=True)
+    password = CharField()
 
     class Meta:
         database = DATABASE
@@ -42,15 +41,13 @@ class Entry(BaseModel):
     resources = TextField()
 
 
-
-
 class Tags(BaseModel):
     tag = CharField(unique=True)
 
 
 class EntryTags(BaseModel):
-    entry = ForeignKeyField(Entry)
-    tag = ForeignKeyField(Tags)
+    entry = ForeignKeyField(Entry, unique=True)
+    tag = ForeignKeyField(Tags, unique=True)
 
     @classmethod
     def tag_current_entries(cls, tag):
@@ -81,8 +78,6 @@ class EntryTags(BaseModel):
                         tag=tag)
             except IntegrityError:
                 pass
-
-
 
 
 def initialize():

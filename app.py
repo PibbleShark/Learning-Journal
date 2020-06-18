@@ -92,7 +92,7 @@ def index():
 
 
 @app.route('/entries')
-def entries():
+def view_entries():
     """Page to view a list of entries.  More entries are viewed"""
     entries = models.Entry.select().limit(24)
     return render_template('index.html', entries=entries)
@@ -101,7 +101,7 @@ def entries():
 @app.route('/entries/<tag>')
 @login_required
 def entries_by_tag(tag):
-    """Shows all entries with a selected tag"""
+    """Shows all entries with a selected tag."""
     #adapted from code suggestion by Charles Leifer
     tagged_entries = (models.Entry
                       .select()
@@ -112,12 +112,24 @@ def entries_by_tag(tag):
     return render_template('index.html', entries=tagged_entries)
 
 
+@app.route('/tags')
+@login_required
+def view_tags():
+    """View all existing tags to find post associated with them."""
+    tags = models.Tags.select()
+    return render_template('tags.html', tags=tags)
+
+
 @app.route('/entries/<int:id>')
 @login_required
 def view_entry(id):
     """View a journal entry with detail."""
     current_entry = models.Entry.get_by_id(id)
-    return render_template('detail.html', entry=current_entry)
+    #adapted from code suggestion by Charles Leifer
+    entry_tags = (models.Tags.select()
+                  .join(models.EntryTags)
+                  .where(models.EntryTags.entry == current_entry))
+    return render_template('detail.html', entry=current_entry, tags=entry_tags)
 
 
 @app.route('/entries/new', methods=('GET', 'POST'))
@@ -126,20 +138,16 @@ def create_new():
     """Create a new journal entry."""
     form = forms.EntryForm()
     if form.validate_on_submit():
-        try:
-            models.Entry.create(user=g.user.get_id(),
-                                title=form.title.data.strip(),
-                                time_spent=form.time_spent.data,
-                                date_created=form.date_created.data,
-                                content=form.content.data.strip(),
-                                resources=form.resources.data.strip()
-                                )
-            flash("Entry created", "success")
-            models.EntryTags.tag_new_entry(models.Entry.get(title=form.title.data.strip()))
-            return redirect(url_for('entries'))
-        except models.IntegrityError:
-            flash("An entry with that title already exists")
-            return redirect(url_for('view_entry', id=models.Entry.get(title=form.title.data.strip())))
+        models.Entry.create(user=g.user.get_id(),
+                            title=form.title.data.strip(),
+                            time_spent=form.time_spent.data,
+                            date_created=form.date_created.data,
+                            content=form.content.data.strip(),
+                            resources=form.resources.data.strip()
+                            )
+        flash("Entry created", "success")
+        models.EntryTags.tag_new_entry(models.Entry.get(title=form.title.data.strip()))
+        return redirect(url_for('view_entries'))
     return render_template('new.html', form=form)
 
 
@@ -163,25 +171,21 @@ def edit_entry(id):
         entry.resources = form.resources.data.strip()
         entry.save()
         flash("Entry has been updated", "success")
-        return redirect(url_for('entries'))
+        return redirect(url_for('view_entries'))
     return render_template('edit.html', form=form, entry=entry)
 
 
-@app.route('/entries/new_tag', methods=('GET', 'POST'))
+@app.route('/new_tag', methods=('GET', 'POST'))
 @login_required
 def create_tag():
     """create a tag to organize your journal entries."""
     form = forms.TagForm()
     if form.validate_on_submit():
-        try:
-            models.Tags.create(tag=form.tag.data.strip())
-            flash('Tag Created', 'success')
-            models.EntryTags.tag_current_entries(models.Tags.get(tag=form.tag.data.strip()))
-            return redirect(url_for('entries'))
-        except models.IntegrityError:
-            flash('That tag has already been made')
-            return redirect(url_for('entries'))
-    return render_template('tag.html', form=form)
+        models.Tags.create(tag=form.tag.data.strip())
+        flash('Tag Created', 'success')
+        models.EntryTags.tag_current_entries(models.Tags.get(tag=form.tag.data.strip()))
+        return redirect(url_for('view_entries'))
+    return render_template('create_tag.html', form=form)
 
 
 @app.route('/entries/<int:id>/delete', methods=('GET', 'POST'))
@@ -189,17 +193,34 @@ def create_tag():
 def delete_entry(id):
     """Delete a journal entry"""
     entry = models.Entry.get_by_id(id)
+    tag_association = models.EntryTags.get(entry=entry)
     if entry.count() == 0:
         abort(404)
     else:
+        tag_association.delete_instance()
         entry.delete_instance()
         flash("Entry has been deleted", "success")
-        return redirect(url_for('entries'))
+        return redirect(url_for('view_entries'))
 
 
-#@app.errorhandler(404)
-#def not_found():
-    #return render_template('404.html'), 404
+@app.route('/tags/<tag>', methods=('GET', 'POST'))
+@login_required
+def delete_tag(tag):
+    """Delete an unused tag"""
+    unwanted_tag = models.Tags.get(tag=tag)
+    tag_association = models.EntryTags.get(tag=unwanted_tag)
+    if unwanted_tag.count() == 0:
+        abort(404)
+    else:
+        tag_association.delete_instance()
+        unwanted_tag.delete_instance()
+        flash("Tag has been deleted", "success")
+        return redirect(url_for('view_entries'))
+
+
+@app.errorhandler(404)
+def not_found():
+    return render_template('404.html'), 404
 
 
 if __name__ == '__main__':

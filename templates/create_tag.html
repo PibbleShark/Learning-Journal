@@ -4,6 +4,7 @@
 {% block content %}
 <form method="POST" action="">
     {{ form.hidden_tag() }}
+    <h3>Tags will automatically associate with an entry that contains the tag name within the "What I Learned" section</h3>
     <div>{{ form.tag.label }}{{ form.tag(class='login-register') }}</div>
     <input type="submit" value="Create Tag" class="button icon-left"><br>
 </form>
