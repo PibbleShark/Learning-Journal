@@ -124,12 +124,16 @@ def view_tags():
 @login_required
 def view_entry(id):
     """View a journal entry with detail."""
-    current_entry = models.Entry.get_by_id(id)
-    #adapted from code suggestion by Charles Leifer
-    entry_tags = (models.Tags.select()
-                  .join(models.EntryTags)
-                  .where(models.EntryTags.entry == current_entry))
-    return render_template('detail.html', entry=current_entry, tags=entry_tags)
+    try:
+        current_entry = models.Entry.get_by_id(id)
+    except models.DoesNotExist:
+        abort(404)
+    else:
+        #adapted from code suggestion by Charles Leifer
+        entry_tags = (models.Tags.select()
+                      .join(models.EntryTags)
+                      .where(models.EntryTags.entry == current_entry))
+        return render_template('detail.html', entry=current_entry, tags=entry_tags)
 
 
 @app.route('/entries/new', methods=('GET', 'POST'))
@@ -155,24 +159,29 @@ def create_new():
 @login_required
 def edit_entry(id):
     """Edit a journal entry"""
-    entry = models.Entry.get_by_id(id)
-    form = forms.EntryForm(
-        title=entry.title,
-        time_spent=entry.time_spent,
-        date_created=entry.date_created,
-        content=entry.content,
-        resources=entry.resources
-    )
-    if form.validate_on_submit():
-        entry.title = form.title.data.strip()
-        entry.time_spent = form.time_spent.data
-        entry.date_created = form.date_created.data
-        entry.content = form.content.data.strip()
-        entry.resources = form.resources.data.strip()
-        entry.save()
-        flash("Entry has been updated", "success")
-        return redirect(url_for('view_entries'))
-    return render_template('edit.html', form=form, entry=entry)
+    try:
+        entry = models.Entry.get_by_id(id)
+    except models.DoesNotExist:
+        abort(404)
+    else:
+        form = forms.EditForm(
+            title=entry.title,
+            time_spent=entry.time_spent,
+            date_created=entry.date_created,
+            content=entry.content,
+            resources=entry.resources
+        )
+        if form.validate_on_submit():
+            entry.title = form.title.data.strip()
+            entry.time_spent = form.time_spent.data
+            entry.date_created = form.date_created.data
+            entry.content = form.content.data.strip()
+            entry.resources = form.resources.data.strip()
+            entry.save()
+            flash("Entry has been updated", "success")
+            models.EntryTags.tag_new_entry(models.Entry.get(title=form.title.data.strip()))
+            return redirect(url_for('view_entries'))
+        return render_template('edit.html', form=form, entry=entry)
 
 
 @app.route('/new_tag', methods=('GET', 'POST'))
@@ -192,9 +201,10 @@ def create_tag():
 @login_required
 def delete_entry(id):
     """Delete a journal entry"""
-    entry = models.Entry.get_by_id(id)
-    tag_association = models.EntryTags.get(entry=entry)
-    if entry.count() == 0:
+    try:
+        entry = models.Entry.get_by_id(id)
+        tag_association = models.EntryTags.get(entry=entry)
+    except models.DoesNotExist:
         abort(404)
     else:
         tag_association.delete_instance()
@@ -207,9 +217,10 @@ def delete_entry(id):
 @login_required
 def delete_tag(tag):
     """Delete an unused tag"""
-    unwanted_tag = models.Tags.get(tag=tag)
-    tag_association = models.EntryTags.get(tag=unwanted_tag)
-    if unwanted_tag.count() == 0:
+    try:
+        unwanted_tag = models.Tags.get(tag=tag)
+        tag_association = models.EntryTags.get(tag=unwanted_tag)
+    except models.DoesNotExist:
         abort(404)
     else:
         tag_association.delete_instance()
@@ -219,7 +230,7 @@ def delete_tag(tag):
 
 
 @app.errorhandler(404)
-def not_found():
+def not_found(error):
     return render_template('404.html'), 404
 
 

@@ -55,6 +55,22 @@ class EntryForm(FlaskForm):
         InputRequired(message='You must give your entry a title'),
         title_exists
     ])
+    time_spent = IntegerField('Number of Hours Spent', validators=[
+        InputRequired(message='How long did this take you?')
+    ])
+    date_created = DateField('Date', validators=[
+        InputRequired(message='Please enter a date')
+    ])
+    content = TextAreaField('What I Learned', validators=[
+        InputRequired(message='You must have learned something')
+    ])
+    resources = TextAreaField('Resources to Remember')
+
+
+class EditForm(FlaskForm):
+    title = StringField('Title', validators=[
+        InputRequired(message='You must give your entry a title'),
+    ])
     time_spent = IntegerField('Number of Hours Spent')
     date_created = DateField('Date')
     content = TextAreaField('What I Learned', validators=[

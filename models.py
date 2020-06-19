@@ -42,7 +42,7 @@ class Entry(BaseModel):
 
 
 class Tags(BaseModel):
-    tag = CharField(unique=True)
+    tag = CharField()
 
 
 class EntryTags(BaseModel):
@@ -67,7 +67,7 @@ class EntryTags(BaseModel):
     @classmethod
     def tag_new_entry(cls, entry):
         try:
-            associated_tags = Tags.select().where(Tags.tag.in_(entry.content))
+            associated_tags = Tags.select().where(Tags.tag.in_(entry.content.split(' ')))
         except DoesNotExist:
             pass
         else:

@@ -2,12 +2,12 @@
 
 {% block content %}
 <div class="container">
-    <div class="entry-list">
-        {% for tag in tags %}
-        <article>
-            <a class="button.tag" href="{{ url_for('entries_by_tag', tag=tag.tag) }}">{{ tag.tag }}</a>
-        </article>
-        {% endfor %}
-    </div>
+    <span class="display tags">
+    {% for tag in tags %}
+        <a class="button tag" href="{{ url_for('entries_by_tag', tag=tag.tag) }}">
+            {{ tag.tag }}</a>
+        <a class="button tag delete" href="{{ url_for('delete_tag', tag=tag.tag) }}">delete</a>
+    {% endfor %}
+    </span>
 </div>
 {% endblock %}
