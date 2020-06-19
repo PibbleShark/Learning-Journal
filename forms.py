@@ -20,7 +20,7 @@ def title_exists(form, field):
 
 def tag_exists(form, field):
     """Make sure a duplicate tag is not created"""
-    if Tags.select().where(Entry.tag ** field.data).exists():
+    if Tags.select().where(Tags.tag ** field.data).exists():
         raise ValidationError('That tag already exists.')
 
 

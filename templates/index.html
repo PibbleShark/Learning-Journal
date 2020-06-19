@@ -9,11 +9,6 @@
             <time datetime="{{ entry.date_created.strftime('%d/%m/%Y') }}">
                 {{ entry.date_created.strftime('%d/%m/%Y') }}
             </time>
-            {% if entries == tagged_entries %}
-                <div class="delete">
-                    <a class="button" href="{{ url_for('delete_entry', id=entry.id) }}">Delete Entry</a>
-                </div>
-            {% endif %}
         </article>
         {% endfor %}
     </div>

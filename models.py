@@ -52,7 +52,7 @@ class EntryTags(BaseModel):
     @classmethod
     def tag_current_entries(cls, tag):
         try:
-            tag_entries = Entry.select().where(Entry.contents.contains(tag))
+            tag_entries = Entry.select().where(Entry.content.contains(tag.tag))
         except DoesNotExist:
             pass
         else:
@@ -67,7 +67,7 @@ class EntryTags(BaseModel):
     @classmethod
     def tag_new_entry(cls, entry):
         try:
-            associated_tags = Tags.select().where(entry.contents.contains(Tags.tag))
+            associated_tags = Tags.select().where(Tags.tag.in_(entry.content))
         except DoesNotExist:
             pass
         else:

@@ -5,8 +5,7 @@
     <div class="entry-list">
         {% for tag in tags %}
         <article>
-            <a class="button.tag" href="{{ url_for('entries_by_tag', tag=tag.tag) }}">
-                <span>{{ tag.tag }}</span></a>
+            <a class="button.tag" href="{{ url_for('entries_by_tag', tag=tag.tag) }}">{{ tag.tag }}</a>
         </article>
         {% endfor %}
     </div>
