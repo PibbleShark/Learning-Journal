@@ -88,14 +88,22 @@ def logout():
 def index():
     """Index page is also a list of entries"""
     entries = models.Entry.select().limit(8)
-    return render_template('index.html', entries=entries)
+    for entry in entries:
+        entry_tags = (models.Tags.select()
+                      .join(models.EntryTags)
+                      .where(models.EntryTags.entry == entry))
+    return render_template('index.html', entries=entries, tags=entry_tags)
 
 
 @app.route('/entries')
 def view_entries():
     """Page to view a list of entries.  More entries are viewed"""
     entries = models.Entry.select().limit(24)
-    return render_template('index.html', entries=entries)
+    for entry in entries:
+        entry_tags = (models.Tags.select()
+                      .join(models.EntryTags)
+                      .where(models.EntryTags.entry == entry))
+    return render_template('index.html', entries=entries, tags=entry_tags)
 
 
 @app.route('/entries/<tag>')
@@ -109,7 +117,11 @@ def entries_by_tag(tag):
                       .join(models.Tags)
                       .where(models.Tags.tag == tag)
                       .order_by(models.Entry.date_created.desc()))
-    return render_template('index.html', entries=tagged_entries)
+    for entry in tagged_entries:
+        entry_tags = (models.Tags.select()
+                      .join(models.EntryTags)
+                      .where(models.EntryTags.entry == entry))
+    return render_template('index.html', entries=tagged_entries, tags=entry_tags)
 
 
 @app.route('/tags')
