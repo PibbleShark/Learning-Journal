@@ -55,7 +55,6 @@ class EntryTags(Model):
             (('entry', 'tag'), True),
         )
 
-
     @classmethod
     def tag_current_entries(cls, tag):
         try:
@@ -70,7 +69,6 @@ class EntryTags(Model):
                         tag=tag)
             except IntegrityError:
                 pass
-
 
     @classmethod
     def tag_new_entry(cls, entry):

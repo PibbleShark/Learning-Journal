@@ -115,7 +115,6 @@ def entries_by_tag(tag):
     """Shows all entries with a selected tag."""
     # adapted from code suggestion by Charles Leifer
     display_entries = []
-    tagged_entries = []
     try:
         tagged_entries = set((models.Entry
                               .select()
