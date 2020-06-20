@@ -45,9 +45,16 @@ class Tags(BaseModel):
     tag = CharField()
 
 
-class EntryTags(BaseModel):
-    entry = ForeignKeyField(Entry, unique=True)
-    tag = ForeignKeyField(Tags, unique=True)
+class EntryTags(Model):
+    entry = ForeignKeyField(Entry)
+    tag = ForeignKeyField(Tags)
+
+    class Meta:
+        database = DATABASE
+        indexes = (
+            (('entry', 'tag'), True),
+        )
+
 
     @classmethod
     def tag_current_entries(cls, tag):
@@ -64,6 +71,7 @@ class EntryTags(BaseModel):
             except IntegrityError:
                 pass
 
+
     @classmethod
     def tag_new_entry(cls, entry):
         try:
@@ -78,6 +86,17 @@ class EntryTags(BaseModel):
                         tag=tag)
             except IntegrityError:
                 pass
+
+    @classmethod
+    def remove_existing_tag(cls, entry):
+        try:
+            associated_tags = Tags.select().where(Tags.tag.not_in(entry.content.split(' ')))
+        except DoesNotExist:
+            pass
+        else:
+            for tag in associated_tags:
+                unwanted_association = cls.get(tag=tag, entry=entry)
+                unwanted_association.delete_instance()
 
 
 def initialize():

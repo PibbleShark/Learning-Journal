@@ -1,7 +1,6 @@
-from flask import (Flask, g, render_template, flash, redirect, url_for, abort,)
+from flask import (Flask, g, render_template, flash, redirect, url_for, abort, )
 from flask_bcrypt import check_password_hash
 from flask_login import (LoginManager, login_user, logout_user, current_user, login_required)
-
 
 import forms
 import models
@@ -88,47 +87,58 @@ def logout():
 def index():
     """Index page is also a list of entries"""
     entries = models.Entry.select().limit(8)
+    display_entries = []
     for entry in entries:
-        entry_tags = (models.Tags.select()
-                      .join(models.EntryTags)
-                      .where(models.EntryTags.entry == entry))
-    return render_template('index.html', entries=entries, tags=entry_tags)
+        entry_tags = set((models.Tags.select()
+                          .join(models.EntryTags)
+                          .where(models.EntryTags.entry == entry)))
+        display_entries.append([entry, entry_tags])
+    return render_template('index.html', entries=display_entries)
 
 
 @app.route('/entries')
 def view_entries():
     """Page to view a list of entries.  More entries are viewed"""
     entries = models.Entry.select().limit(24)
+    display_entries = []
     for entry in entries:
-        entry_tags = (models.Tags.select()
-                      .join(models.EntryTags)
-                      .where(models.EntryTags.entry == entry))
-    return render_template('index.html', entries=entries, tags=entry_tags)
+        entry_tags = set((models.Tags.select()
+                          .join(models.EntryTags)
+                          .where(models.EntryTags.entry == entry)))
+        display_entries.append([entry, entry_tags])
+    return render_template('index.html', entries=display_entries)
 
 
 @app.route('/entries/<tag>')
 @login_required
 def entries_by_tag(tag):
     """Shows all entries with a selected tag."""
-    #adapted from code suggestion by Charles Leifer
-    tagged_entries = (models.Entry
-                      .select()
-                      .join(models.EntryTags)
-                      .join(models.Tags)
-                      .where(models.Tags.tag == tag)
-                      .order_by(models.Entry.date_created.desc()))
-    for entry in tagged_entries:
-        entry_tags = (models.Tags.select()
-                      .join(models.EntryTags)
-                      .where(models.EntryTags.entry == entry))
-    return render_template('index.html', entries=tagged_entries, tags=entry_tags)
+    # adapted from code suggestion by Charles Leifer
+    display_entries = []
+    tagged_entries = []
+    try:
+        tagged_entries = set((models.Entry
+                              .select()
+                              .join(models.EntryTags)
+                              .join(models.Tags)
+                              .where(models.Tags.tag == tag)
+                              .order_by(models.Entry.date_created.desc())))
+    except models.DoesNotExist:
+        redirect(url_for('view_entries'))
+    else:
+        for entry in tagged_entries:
+            entry_tags = set((models.Tags.select()
+                              .join(models.EntryTags)
+                              .where(models.EntryTags.entry == entry)))
+            display_entries.append([entry, entry_tags])
+    return render_template('index.html', entries=display_entries)
 
 
 @app.route('/tags')
 @login_required
 def view_tags():
     """View all existing tags to find post associated with them."""
-    tags = models.Tags.select()
+    tags = set(models.Tags.select())
     return render_template('tags.html', tags=tags)
 
 
@@ -141,10 +151,10 @@ def view_entry(id):
     except models.DoesNotExist:
         abort(404)
     else:
-        #adapted from code suggestion by Charles Leifer
-        entry_tags = (models.Tags.select()
-                      .join(models.EntryTags)
-                      .where(models.EntryTags.entry == current_entry))
+        # adapted from code suggestion by Charles Leifer
+        entry_tags = set((models.Tags.select()
+                          .join(models.EntryTags)
+                          .where(models.EntryTags.entry == current_entry)))
         return render_template('detail.html', entry=current_entry, tags=entry_tags)
 
 
@@ -192,6 +202,7 @@ def edit_entry(id):
             entry.save()
             flash("Entry has been updated", "success")
             models.EntryTags.tag_new_entry(models.Entry.get(title=form.title.data.strip()))
+            models.EntryTags.remove_existing_tag(models.Entry.get(title=form.title.data.strip()))
             return redirect(url_for('view_entries'))
         return render_template('edit.html', form=form, entry=entry)
 
@@ -215,11 +226,14 @@ def delete_entry(id):
     """Delete a journal entry"""
     try:
         entry = models.Entry.get_by_id(id)
-        tag_association = models.EntryTags.get(entry=entry)
+        try:
+            tag_association = models.EntryTags.get(entry=entry)
+            tag_association.delete_instance()
+        except models.DoesNotExist:
+            pass
     except models.DoesNotExist:
         abort(404)
     else:
-        tag_association.delete_instance()
         entry.delete_instance()
         flash("Entry has been deleted", "success")
         return redirect(url_for('view_entries'))

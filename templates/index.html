@@ -4,15 +4,17 @@
 <div class="container">
     <div class="entry-list">
         {% for entry in entries %}
-        <article>
-            <h2><a href="{{ url_for('view_entry', id=entry.id) }}">{{ entry.title }}</a></h2>
-            <time datetime="{{ entry.date_created.strftime('%d/%m/%Y') }}">
-                {{ entry.date_created.strftime('%d/%m/%Y') }}
-            </time>
-            {% for tag in tags %}
-            <a class="button tag" href="{{ url_for('entries_by_tag', tag=tag.tag) }}">
-                <span>{{ tag.tag }}</span></a>
-            {% endfor %}
+
+            <article>
+                <h2><a href="{{ url_for('view_entry', id=entry[0].id) }}">{{ entry[0].title }}</a></h2>
+                <time datetime="{{ entry[0].date_created.strftime('%d/%m/%Y') }}">
+                    {{ entry[0].date_created.strftime('%d/%m/%Y') }}
+                </time>
+                {% for tag in entry[1] %}
+                <a class="button tag" href="{{ url_for('entries_by_tag', tag=tag.tag) }}">
+                    <span>{{ tag.tag }}</span></a>
+                {% endfor %}
+
         </article>
         {% endfor %}
     </div>
