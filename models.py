@@ -74,7 +74,6 @@ class EntryTags(Model):
     @classmethod
     def tag_new_entry(cls, entry):
         try:
-            #re call adapted from code written by user3850 stack overflow
             associated_tags = Tags.select().where(Tags.tag.in_(re.findall(r"[\w']+|[.,!?;]", entry.content)))
         except DoesNotExist:
             pass
@@ -90,7 +89,6 @@ class EntryTags(Model):
     @classmethod
     def remove_existing_tag(cls, entry):
         try:
-            # re call adapted from code written by user3850 stack overflow
             associated_tags = Tags.select().where(Tags.tag.not_in(re.findall(r"[\w']+|[.,!?;]", entry.content)))
         except DoesNotExist:
             pass
