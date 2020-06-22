@@ -1,4 +1,5 @@
 import datetime
+import re
 
 from flask_bcrypt import generate_password_hash
 from flask_login import UserMixin
@@ -73,7 +74,8 @@ class EntryTags(Model):
     @classmethod
     def tag_new_entry(cls, entry):
         try:
-            associated_tags = Tags.select().where(Tags.tag.in_(entry.content.split(' ')))
+            #re call adapted from code written by user3850 stack overflow
+            associated_tags = Tags.select().where(Tags.tag.in_(re.findall(r"[\w']+|[.,!?;]", entry.content)))
         except DoesNotExist:
             pass
         else:
@@ -88,13 +90,18 @@ class EntryTags(Model):
     @classmethod
     def remove_existing_tag(cls, entry):
         try:
-            associated_tags = Tags.select().where(Tags.tag.not_in(entry.content.split(' ')))
+            # re call adapted from code written by user3850 stack overflow
+            associated_tags = Tags.select().where(Tags.tag.not_in(re.findall(r"[\w']+|[.,!?;]", entry.content)))
         except DoesNotExist:
             pass
         else:
             for tag in associated_tags:
-                unwanted_association = cls.get(tag=tag, entry=entry)
-                unwanted_association.delete_instance()
+                try:
+                    unwanted_association = cls.get(tag=tag, entry=entry)
+                except DoesNotExist:
+                    pass
+                else:
+                    unwanted_association.delete_instance()
 
 
 def initialize():
